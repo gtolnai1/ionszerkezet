@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ionképződés gyakorló</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #2c3e50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px 40px;
+            max-width: 700px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        h1 {
+            text-align: center;
+            color: #1a252f;
+            margin-bottom: 5px;
+            font-size: 1.8em;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+        .score-board {
+            text-align: right;
+            font-size: 1.1em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .question-box {
+            background-color: #eaf2f8;
+            border-left: 6px solid #3498db;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 1.15em;
+            line-height: 1.6;
+        }
+        .question-box .highlight {
+            font-weight: bold;
+            color: #2980b9;
+            font-size: 1.2em;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .input-row label {
+            font-weight: 600;
+            min-width: 200px;
+            color: #34495e;
+        }
+        .input-row input[type="text"], .input-row select {
+            padding: 10px 14px;
+            border: 2px solid #bdc3c7;
+            border-radius: 6px;
+            font-size: 1em;
+            width: 180px;
+            transition: border-color 0.2s;
+            font-family: 'Courier New', monospace;
+        }
+        .input-row input[type="text"]:focus, .input-row select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        .input-row input.correct {
+            border-color: #27ae60;
+            background-color: #eafaf1;
+        }
+        .input-row input.incorrect {
+            border-color: #e74c3c;
+            background-color: #fdedec;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        button {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        .btn-success {
+            background-color: #2ecc71;
+            color: white;
+        }
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        .btn-warning {
+            background-color: #f39c12;
+            color: white;
+        }
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        .message {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            min-height: 1.8em;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .message.success {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        .message.error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+        .message.info {
+            color: #0c5460;
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 25px;
+            font-size: 0.9em;
+            color: #7f8c8d;
+            flex-wrap: wrap;
+        }
+        .legend span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            margin-left: 5px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            .input-row label {
+                min-width: 100%;
+            }
+            .input-row input[type="text"], .input-row select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Ionképződés gyakorló</h1>
+    <div class="subtitle">Atomokból ionok, ionokból atomok </div>
+    
+    <div class="score-board">
+        Pontszám: <span id="score">0</span> / <span id="total">0</span>
+    </div>
+
+    <div class="question-box" id="question-box">
+        <!-- A kérdés szövege dinamikusan generálódik -->
+    </div>
+
+    <div class="input-group" id="input-group">
+        <!-- Az input mezők dinamikusan generálódnak -->
+    </div>
+
+    <div class="controls">
+        <button class="btn-primary" id="btn-new" onclick="generateQuestion()">Új feladat</button>
+        <button class="btn-success" id="btn-check" onclick="checkAnswer()">Ellenőrzés</button>
+        <button class="btn-warning" id="btn-show" onclick="showSolution()">Megoldás</button>
+    </div>
+
+    <div class="message" id="message"></div>
+
+    <div class="legend">
+        <span>💡 Tipp: használd a függvénytáblát a nemesgázszerkezetekhez!</span>
+    </div>
+</div>
+
+<script>
+    // Adatbázis a feladatokhoz a tankönyv 25-29. oldala alapján
+    // Minden atomhoz tartozik: vegyjel, név, rendszám, csoport, kation/anion töltés, nemesgázszerkezet, elektron leadás/felvétel
+    const atoms = [
+        // I.A csoport - alkálifémek (1 vegyértékelektron, 1 elektron leadás)
+        { symbol: 'Li', name: 'lítium', number: 3, group: 'I.A', ionType: 'cation', ionCharge: '+1', nobleGas: 'He', electronsChanged: 1, valence: '2s¹' },
+        { symbol: 'Na', name: 'nátrium', number: 11, group: 'I.A', ionType: 'cation', ionCharge: '+1', nobleGas: 'Ne', electronsChanged: 1, valence: '3s¹' },
+        { symbol: 'K', name: 'kálium', number: 19, group: 'I.A', ionType: 'cation', ionCharge: '+1', nobleGas: 'Ar', electronsChanged: 1, valence: '4s¹' },
+        
+        // II.A csoport - alkáliföldfémek (2 vegyértékelektron, 2 elektron leadás)
+        { symbol: 'Be', name: 'berillium', number: 4, group: 'II.A', ionType: 'cation', ionCharge: '+2', nobleGas: 'He', electronsChanged: 2, valence: '2s²' },
+        { symbol: 'Mg', name: 'magnézium', number: 12, group: 'II.A', ionType: 'cation', ionCharge: '+2', nobleGas: 'Ne', electronsChanged: 2, valence: '3s²' },
+        { symbol: 'Ca', name: 'kalcium', number: 20, group: 'II.A', ionType: 'cation', ionCharge: '+2', nobleGas: 'Ar', electronsChanged: 2, valence: '4s²' },
+        
+        // III.A csoport - alumínium (3 vegyértékelektron, 3 elektron leadás)
+        { symbol: 'Al', name: 'alumínium', number: 13, group: 'III.A', ionType: 'cation', ionCharge: '+3', nobleGas: 'Ne', electronsChanged: 3, valence: '3s² 3p¹' },
+        
+        // V.A csoport - nitrogéncsoport (3 elektron felvétel az anionhoz)
+        { symbol: 'N', name: 'nitrogén', number: 7, group: 'V.A', ionType: 'anion', ionCharge: '-3', nobleGas: 'Ne', electronsChanged: 3, valence: '2s² 2p³' },
+        { symbol: 'P', name: 'foszfor', number: 15, group: 'V.A', ionType: 'anion', ionCharge: '-3', nobleGas: 'Ar', electronsChanged: 3, valence: '3s² 3p³' },
+        
+        // VI.A csoport - oxigéncsoport (2 elektron felvétel az anionhoz)
+        { symbol: 'O', name: 'oxigén', number: 8, group: 'VI.A', ionType: 'anion', ionCharge: '-2', nobleGas: 'Ne', electronsChanged: 2, valence: '2s² 2p⁴' },
+        { symbol: 'S', name: 'kén', number: 16, group: 'VI.A', ionType: 'anion', ionCharge: '-2', nobleGas: 'Ar', electronsChanged: 2, valence: '3s² 3p⁴' },
+        
+        // VII.A csoport - halogének (1 elektron felvétel az anionhoz)
+        { symbol: 'F', name: 'fluor', number: 9, group: 'VII.A', ionType: 'anion', ionCharge: '-1', nobleGas: 'Ne', electronsChanged: 1, valence: '2s² 2p⁵' },
+        { symbol: 'Cl', name: 'klór', number: 17, group: 'VII.A', ionType: 'anion', ionCharge: '-1', nobleGas: 'Ar', electronsChanged: 1, valence: '3s² 3p⁵' },
+        { symbol: 'Br', name: 'bróm', number: 35, group: 'VII.A', ionType: 'anion', ionCharge: '-1', nobleGas: 'Kr', electronsChanged: 1, valence: '4s² 4p⁵' },
+        { symbol: 'I', name: 'jód', number: 53, group: 'VII.A', ionType: 'anion', ionCharge: '-1', nobleGas: 'Xe', electronsChanged: 1, valence: '5s² 5p⁵' }
+    ];
+
+    let currentQuestion = null;
+    let score = 0;
+    let total = 0;
+    let answered = false;
+
+    // Segédfüggvény a nemesgázszerkezet ellenőrzéséhez
+    function isValidNobleGas(gas) {
+        return ['He', 'Ne', 'Ar', 'Kr', 'Xe', 'Rn'].includes(gas);
+    }
+
+    // Kérdés generálása
+    function generateQuestion() {
+        // Véletlenszerű atom kiválasztása
+        const atom = atoms[Math.floor(Math.random() * atoms.length)];
+        
+        // Véletlenszerű kérdéstípus: 0 = atom -> ion, 1 = ion -> atom, 2 = vegyes
+        const questionType = Math.floor(Math.random() * 3);
+        
+        let question = {};
+        
+        if (questionType === 0 || questionType === 2) {
+            // Atom -> Ion
+            question = {
+                type: 'atom_to_ion',
+                atom: atom,
+                text: `A(z) <span class="highlight">${atom.name}</span> (${atom.symbol}) atomjából milyen ion keletkezik?`,
+                fields: [
+                    { id: 'ionCharge', label: 'Az ion töltése:', type: 'text', placeholder: 'pl. +1, -2', correct: atom.ionCharge },
+                    { id: 'nobleGas', label: 'Melyik nemesgáz szerkezetét éri el?', type: 'text', placeholder: 'pl. Ne, Ar', correct: atom.nobleGas },
+                    { id: 'electronsChanged', label: 'Hány elektront ad le/fel?', type: 'text', placeholder: 'pl. 1, 2', correct: atom.electronsChanged }
+                ]
+            };
+        } else {
+            // Ion -> Atom
+            question = {
+                type: 'ion_to_atom',
+                atom: atom,
+                text: `A(z) <span class="highlight">${atom.ionCharge}</span> töltésű ion ${atom.nobleGas} nemesgázszerkezetű. Melyik atomból keletkezett, és hány elektront adott le/fel?`,
+                fields: [
+                    { id: 'atomSymbol', label: 'Az atom vegyjele:', type: 'text', placeholder: 'pl. Na, Cl', correct: atom.symbol },
+                    { id: 'electronsChanged', label: 'Hány elektront adott le/fel?', type: 'text', placeholder: 'pl. 1, 2', correct: atom.electronsChanged }
+                ]
+            };
+        }
+        
+        currentQuestion = question;
+        answered = false;
+        
+        // UI frissítése
+        document.getElementById('question-box').innerHTML = question.text;
+        
+        const inputGroup = document.getElementById('input-group');
+        inputGroup.innerHTML = '';
+        
+        question.fields.forEach(field => {
+            const row = document.createElement('div');
+            row.className = 'input-row';
+            
+            const label = document.createElement('label');
+            label.textContent = field.label;
+            label.htmlFor = field.id;
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.id = field.id;
+            input.placeholder = field.placeholder;
+            input.dataset.correct = field.correct;
+            
+            row.appendChild(label);
+            row.appendChild(input);
+            inputGroup.appendChild(row);
+        });
+        
+        // Üzenet törlése
+        const msg = document.getElementById('message');
+        msg.textContent = '';
+        msg.className = 'message';
+        
+        // Bemeneti mezők eseménykezelője: ha beírják a választ, töröljük a színezést
+        document.querySelectorAll('#input-group input').forEach(input => {
+            input.addEventListener('input', () => {
+                input.classList.remove('correct', 'incorrect');
+                if (!answered) {
+                    document.getElementById('message').textContent = '';
+                    document.getElementById('message').className = 'message';
+                }
+            });
+        });
+    }
+
+    // Ellenőrzés
+    function checkAnswer() {
+        if (!currentQuestion) return;
+        if (answered) return; // Ne lehessen kétszer ellenőrizni
+        
+        let isCorrect = true;
+        const inputs = document.querySelectorAll('#input-group input');
+        
+        inputs.forEach(input => {
+            const userValue = input.value.trim();
+            const correctValue = input.dataset.correct;
+            
+            // Normalizálás: kisbetű, szóközök eltávolítása, + jel kezelése
+            const normalize = (str) => {
+                return str.toLowerCase()
+                    .replace(/\s+/g, '')
+                    .replace(/^\+/, '')
+                    .replace(/^\-/, '-')
+                    .replace(/^(\d+)$/, '+$1'); // Ha csak szám, akkor + jelet teszünk elé
+            };
+            
+            const normalizedUser = normalize(userValue);
+            const normalizedCorrect = normalize(correctValue);
+            
+            // Speciális kezelés a töltésnél: +1, 1, +1 mind ugyanaz
+            let isMatch = false;
+            if (input.id === 'ionCharge') {
+                // Töltés összehasonlítás
+                const userCharge = userValue.replace(/\s/g, '');
+                const correctCharge = correctValue.replace(/\s/g, '');
+                // Kezeljük a +1, 1, +1, -1, 1- formátumokat
+                const parseCharge = (c) => {
+                    if (c.startsWith('+')) return parseInt(c.substring(1)) || 1;
+                    if (c.startsWith('-')) return -(parseInt(c.substring(1)) || 1);
+                    return parseInt(c) || 0;
+                };
+                isMatch = parseCharge(userCharge) === parseCharge(correctCharge);
+            } else if (input.id === 'electronsChanged') {
+                isMatch = parseInt(userValue) === parseInt(correctValue);
+            } else {
+                // Vegyjel és nemesgáz: kis-nagybetű érzéketlen
+                isMatch = normalizedUser === normalizedCorrect;
+            }
+            
+            if (isMatch) {
+                input.classList.add('correct');
+                input.classList.remove('incorrect');
+            } else {
+                input.classList.add('incorrect');
+                input.classList.remove('correct');
+                isCorrect = false;
+            }
+        });
+        
+        const msg = document.getElementById('message');
+        if (isCorrect) {
+            msg.textContent = 'Helyes! Az ionképződés megfelel a szabályoknak.';
+            msg.className = 'message success';
+            score++;
+            answered = true;
+        } else {
+            msg.textContent = 'Hibás. Nézd meg a pirossal jelölt mezőket!';
+            msg.className = 'message error';
+        }
+        
+        total++;
+        document.getElementById('score').textContent = score;
+        document.getElementById('total').textContent = total;
+    }
+
+    // Megoldás mutatása
+    function showSolution() {
+        if (!currentQuestion) return;
+        
+        const inputs = document.querySelectorAll('#input-group input');
+        inputs.forEach(input => {
+            input.value = input.dataset.correct;
+            input.classList.remove('correct', 'incorrect');
+            input.classList.add('correct');
+        });
+        
+        const msg = document.getElementById('message');
+        msg.textContent = 'A helyes megoldás megjelenítve.';
+        msg.className = 'message info';
+        
+        if (!answered) {
+            answered = true;
+            total++;
+            document.getElementById('total').textContent = total;
+        }
+    }
+
+    // Indítás
+    generateQuestion();
+</script>
+</body>
+</html>
